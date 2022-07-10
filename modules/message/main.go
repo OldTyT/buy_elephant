@@ -1,11 +1,8 @@
 package message
 
 import (
-	"strings"
-
 	u "github.com/OldTyT/buy_elephant/bots"
 	"github.com/OldTyT/buy_elephant/utils/log"
-	"github.com/OldTyT/buy_elephant/utils/style"
 	"gopkg.in/telebot.v3"
 )
 
@@ -19,26 +16,12 @@ func (m *Message) Init() error {
 func (m *Message) Commands() []*u.Command {
 	return []*u.Command{
 		{
-			Cmd:  "/me",
-			Desc: "command from IRC",
-			Args: []u.Arg{
-				{
-					Name:     "action",
-					Desc:     "the action you want to perform",
-					Required: true,
-				},
-			},
-			Handler: me,
+			Text:    true,
+			Handler: message,
 		},
 	}
 }
 
-func me(c telebot.Context) error {
-	if len(c.Args()) == 0 {
-		return c.Reply("please provide an action")
-	}
-
-	return c.Send(
-		style.Bold(c.Sender().FirstName + " " + c.Sender().LastName + " " + strings.Join(c.Args(), " ")),
-	)
+func message(c telebot.Context) error {
+	return c.Reply(c.Text())
 }

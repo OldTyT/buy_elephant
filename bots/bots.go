@@ -15,6 +15,7 @@ type Arg struct {
 }
 
 type Command struct {
+	Text    bool
 	Cmd     string
 	Desc    string
 	Args    []Arg
@@ -58,16 +59,19 @@ func Run(m ...Module) {
 	loadModules(m)
 	Get().setCommands()
 
-	log.Info.Println("starting as: " + Get().Bot.Me.Username)
+	log.Info.Println("starting as: @" + Get().Bot.Me.Username)
 	Get().Bot.Start()
 }
 
 func (u *my_bot) AddCommand(c *Command) {
-	u.mut.Lock()
-	defer u.mut.Unlock()
-
-	u.commands[c.Cmd[1:]] = c
-	u.Bot.Handle(c.Cmd, c.Handler)
+	if c.Text != true {
+		u.mut.Lock()
+		defer u.mut.Unlock()
+		u.commands[c.Cmd[1:]] = c
+		u.Bot.Handle(c.Cmd, c.Handler)
+	} else {
+		u.Bot.Handle(tb.OnText, c.Handler)
+	}
 }
 
 func (u *my_bot) setCommands() {
