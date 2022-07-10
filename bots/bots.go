@@ -21,7 +21,7 @@ type Command struct {
 	Handler tb.HandlerFunc
 }
 
-type unverblumt struct {
+type my_bot struct {
 	Bot *tb.Bot
 
 	// sql.DB for disabling etc
@@ -29,17 +29,17 @@ type unverblumt struct {
 	commands map[string]*Command
 }
 
-var instance *unverblumt
+var instance *my_bot
 
-func Get() *unverblumt {
+func Get() *my_bot {
 	return instance
 }
 
 func Run(m ...Module) {
-	instance = new(unverblumt)
+	instance = new(my_bot)
 
 	s := tb.Settings{
-		Token:     os.Getenv("UNVERBLUMT_TOKEN"),
+		Token:     os.Getenv("TOKEN"),
 		ParseMode: "HTML",
 		OnError: func(e error, c tb.Context) {
 			log.Warn.Println(e)
@@ -62,7 +62,7 @@ func Run(m ...Module) {
 	Get().Bot.Start()
 }
 
-func (u *unverblumt) AddCommand(c *Command) {
+func (u *my_bot) AddCommand(c *Command) {
 	u.mut.Lock()
 	defer u.mut.Unlock()
 
@@ -70,7 +70,7 @@ func (u *unverblumt) AddCommand(c *Command) {
 	u.Bot.Handle(c.Cmd, c.Handler)
 }
 
-func (u *unverblumt) setCommands() {
+func (u *my_bot) setCommands() {
 	var cmds []tb.Command
 
 	for _, c := range u.commands {
@@ -86,8 +86,8 @@ func (u *unverblumt) setCommands() {
 }
 
 // add builtin middleware that rejects all disabled commands
-// func (u *unverblumt) disableLocal(cmd string, chatID int) {
+// func (u *my_bot) disableLocal(cmd string, chatID int) {
 // }
 
-// func (u *unverblumt) disableGlobal(cmd string) {
+// func (u *my_bot) disableGlobal(cmd string) {
 // }
